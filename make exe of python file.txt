@@ -1,0 +1,6 @@
+1.without icon
+  a.)pyinstaller -w --onefile "filename.py" or filename.py
+  b.)pyinstaller -w --onefile "filename.py" or filename.py
+  c.)pyinstaller -w --noconsole --onefile filename.py or "filename.py"
+2.with icon
+  a.)pyinstaller -w -F -i ".\icon_name.ico" --onefile ".\filename.py" or filename.py

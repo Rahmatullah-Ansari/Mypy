@@ -1,0 +1,110 @@
+import pyqrcode 
+from tkinter import *
+from tkinter.filedialog import askdirectory,askopenfilename
+import re
+from PIL import Image,ImageTk
+from pyzbar.pyzbar import decode
+p = ''
+def path_select():
+    global p
+    pth = askdirectory()
+    p = pth
+    if p:
+        txt.set(p)
+        flag.set('Path Selected!')
+        fl_lbl.config(fg='green')
+    else:
+        txt.set('Please select path to save file!!')
+        flag.set('Select Path!')
+def generate():
+    global p
+    name = n.get()
+    enroll=e.get()
+    roll = r.get()
+    att = a.get()
+    dt = d.get()
+    email = em.get()
+    if n.get()=='' and e.get()=='' and r.get()=='' and a.get()=='' and d.get()=='' and em.get()=='':
+        flag.set('All field required!')
+    elif re.match('^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$',email):
+        if p:
+            url = pyqrcode.create(f"Name:{name} \nEnrollment No.:{enroll} \nRoll No.:{roll} \nAttendance:{att} \nDate:{dt} \nEmail-Id:{email}")
+            # url.svg(f'{p}/{enroll}.svg', scale =4)
+            url.png(f'{p}/{enroll}.png', scale =4)
+            img = Image.open(f"{p}/{enroll}.png")
+            if img.size[0] > 300 and img.size[1] >300:
+                img = img.resize((295,295),Image.ANTIALIAS)
+            ig = ImageTk.PhotoImage(img)
+            img_lbl = Label(window,image=ig,text='No QR \nAvailable',font=('times new roman',17,'bold'),bg='white',fg='red')
+            img_lbl.image=ig
+            img_lbl.place(x=575,y=105,width=300,height=300)
+            flag.set('Generated!')
+            fl_lbl.config(fg='green')
+        else:
+            flag.set('Path required!')
+    else:
+        flag.set('Failed!')
+def clear():
+    n.set("")
+    e.set("")
+    r.set("")
+    a.set("")
+    d.set("")
+    em.set("")
+    flag.set("")
+    img_lbl.config(image="")
+def open_qr():
+    try:
+        pth = askopenfilename()
+        im = Image.open(pth)
+        if im.size[0] > 300 and im.size[1] > 300:
+            im=im.resize((295,295),Image.ANTIALIAS)
+        i = ImageTk.PhotoImage(im)
+        img_lbl = Label(window,image=i,text='No QR \nAvailable',font=('times new roman',17,'bold'),bg='white',fg='red')
+        img_lbl.image=i
+        img_lbl.place(x=575,y=105,width=300,height=300)
+        result = decode(im)
+        for j in result:
+            field.insert(END,str('Details fetched from opened QR Code:')+field.get("1.0", "end-1c")+str(f"\n{j.data.decode('utf-8')}\n"))
+    except Exception as ex:
+        pass
+window = Tk()
+window.title('QR Code Generator')
+window.geometry("1100x758+400+20")
+window.configure(bg='skyblue')
+window.resizable(0,0)
+txt = StringVar()
+n=StringVar()
+e=StringVar()
+r=StringVar()
+a=StringVar()
+d=StringVar()
+em=StringVar()
+flag = StringVar()
+f = StringVar()
+lbl = Label(window,text='Select Path:',font=('times new roman',20,'bold'),bg='skyblue',fg='red').grid(row=0,column=0,padx=25,pady=25)
+lbl_path = Label(window,textvariable=txt,font=('times new roman',20,'bold'),fg='red',width=23).grid(row=0,column=1,padx=25,pady=15)
+btn_pth = Button(window,text='Select Path',command=path_select,font=('times new roman',15,'bold'),bg='skyblue',fg='red',activebackground='red',activeforeground='skyblue',bd=5,relief=GROOVE).grid(row=0,column=2,padx=25,pady=25)
+name = Label(window,text='Name:',font=('times new roman',17,'bold'),bg='skyblue',fg='red').grid(row=1,column=0,padx=25,pady=10)
+enroll = Label(window,text='Enrollment No.:',font=('times new roman',17,'bold'),bg='skyblue',fg='red').grid(row=2,column=0,padx=25,pady=10)
+roll = Label(window,text='Roll No.:',font=('times new roman',17,'bold'),bg='skyblue',fg='red').grid(row=3,column=0,padx=25,pady=10)
+attendance = Label(window,text='Attendance.:',font=('times new roman',17,'bold'),bg='skyblue',fg='red').grid(row=4,column=0,padx=25,pady=10)
+date = Label(window,text='Date:',font=('times new roman',17,'bold'),bg='skyblue',fg='red').grid(row=5,column=0,padx=25,pady=10)
+email = Label(window,text='Email:',font=('times new roman',17,'bold'),bg='skyblue',fg='red').grid(row=6,column=0,padx=25,pady=10)
+name_lbl = Entry(window,textvariable=n,font=('times new roman',17,'bold'),fg='red',width=23).grid(row=1,column=1,padx=10,pady=10)
+enroll_lbl = Entry(window,textvariable=e,font=('times new roman',17,'bold'),fg='red',width=23).grid(row=2,column=1,padx=10,pady=10)
+roll_lbl = Entry(window,textvariable=r,font=('times new roman',17,'bold'),fg='red',width=23).grid(row=3,column=1,padx=10,pady=10)
+attendance_lbl = Entry(window,textvariable=a,font=('times new roman',17,'bold'),fg='red',width=23).grid(row=4,column=1,padx=10,pady=10)
+date_lbl = Entry(window,textvariable=d,font=('times new roman',17,'bold'),fg='red',width=23).grid(row=5,column=1,padx=10,pady=10)
+email_lbl = Entry(window,textvariable=em,font=('times new roman',17,'bold'),fg='red',width=23).grid(row=6,column=1,padx=10,pady=10)
+btn_create = Button(window,text='Generate QR Code',command=generate,font=('times new roman',15,'bold'),bg='skyblue',fg='red',activebackground='red',activeforeground='skyblue',bd=5,relief=GROOVE).grid(row=7,column=1,padx=25,pady=25)
+btn_open = Button(window,text='Open QR Code',command=open_qr,font=('times new roman',15,'bold'),bg='skyblue',fg='red',activebackground='red',activeforeground='skyblue',bd=5,relief=GROOVE).grid(row=7,column=2,padx=25,pady=25)
+fl_lbl = Label(window,width=13,textvariable=flag,font=('times new roman',15,'bold'),bg='white',fg='red')
+fl_lbl.grid(row=7,column=0,padx=10,pady=10)
+flag.set('Path Is Empty!')
+img_lbl = Label(window,text='No QR \nAvailable',font=('times new roman',17,'bold'),bg='white',fg='red')
+img_lbl.place(x=575,y=105,width=300,height=300)
+btn_clear = Button(window,text='Clear',command=clear,font=('times new roman',15,'bold'),bg='skyblue',fg='red',activebackground='red',activeforeground='skyblue',bd=5,relief=GROOVE).grid(row=8,column=1,padx=10,pady=10)
+field = Text(window,font=('times new roman',15,'bold'),bg='white',fg='black',bd=5)
+field.place(x=3,y=560,width=1092,height=195)
+window.mainloop()

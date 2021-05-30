@@ -1,0 +1,246 @@
+import pyqrcode 
+import webbrowser
+from tkinter import *
+from tkinter.filedialog import askdirectory,askopenfile,askopenfilename,asksaveasfile
+from tkinter import messagebox
+from PIL import Image,ImageTk
+from pyzbar.pyzbar import decode
+import os
+p = ''
+importflag=0
+w=False
+file="no file"
+f=False
+def path_select():
+    global p
+    pth = askdirectory()
+    if pth == '':
+        pth=os.getcwd()
+    p = pth
+    txt.set(p)
+    flag.set('Path Selected!')
+    fl_lbl.config(fg='green')
+def generate():
+    global p
+    try:
+        if not fi.get(1.0,END).strip():
+            flag.set('Please Enter some details!')
+        else:
+            if txt.get()=='':
+                p=os.getcwd()
+                flag.set("Path is current directory.")
+                fl_lbl.config(fg='green')
+                txt.set(p)
+            else:
+                txt.set(p)
+                flag.set('Path Selected!')
+                fl_lbl.config(fg='green')
+                p=txt.get()
+                flag.set('Path Selected!')
+                fl_lbl.config(fg='green')
+                if name.get() == '':
+                    flag.set('Name Required!')
+                    fl_lbl.config(fg='red')
+                else:
+                    lst=[]
+                    v=name.get()
+                    for i in os.listdir(p):
+                        if i.endswith(".png") or i.endswith(".jpg"):
+                            n = os.path.splitext(i)
+                            lst.append(n[0])
+                    if v not in lst:
+                        url = pyqrcode.create(str(fi.get(1.0,END)))
+                        # url.svg(f'{p}/{enroll}.svg', scale =4)
+                        url.png(f'{p}/{v}.png',scale=4)
+                        img = Image.open(f"{p}/{v}.png")
+                        if img.size[0] > 300 and img.size[1] >300:
+                            img = img.resize((295,295),Image.ANTIALIAS)
+                        ig = ImageTk.PhotoImage(img)
+                        img_lbl = Label(window,image=ig,text='No QR \nAvailable',font=('times new roman',17,'bold'),bg='white',fg='red')
+                        img_lbl.image=ig
+                        img_lbl.place(x=795,y=209,width=300,height=300)
+                        flag.set('Generated!')
+                        fl_lbl.config(fg='green')
+                    else:
+                        flag.set('File Exist,enter another name!!')
+                        fl_lbl.config(fg='red')
+    except:
+        flag.set("Details is non convenient for QR Code.")
+        fl_lbl.config(fg='red')
+def clear():
+    name.config(state='normal')
+    name.delete(0,END)
+    field.delete(1.0,END)
+    fi.delete(1.0,END)
+    txt.set("")
+    fl_lbl.config(fg='red')
+    name_lbl.config(text='Enter Name Of QR Image:')
+    btn_pth.config(state='active')
+    btn_create.config(state='active')
+    flag.set("")
+    lbl.config(text='Select Path:')
+    img_lbl = Label(window,text='No QR \nAvailable',font=('times new roman',17,'bold'),bg='white',fg='red')
+    img_lbl.place(x=795,y=209,width=300,height=300)
+    btn_op.config(state='active')
+def open_qr():
+    try:
+        global importflag
+        importflag=1
+        fi.delete(1.0,END)
+        pth = askopenfilename()
+        x=pth
+        v=x.split("/")
+        if v[-1].endswith(".png") or v[-1].endswith(".jpg"):
+            im = Image.open(pth)
+            if im.size[0] > 300 and im.size[1] > 300:
+                im=im.resize((295,295),Image.ANTIALIAS)
+            i = ImageTk.PhotoImage(im)
+            result = decode(im)
+            field.delete(1.0,END)
+            if len(result) == 0:
+                flag.set("It's Not a QR Code!!")
+                fl_lbl.config(fg='red')
+            else:
+                txt.set(pth)
+                flag.set("File Opened!")
+                fl_lbl.config(fg='green')
+                name_lbl.config(text='Name of file:')
+                btn_pth.config(state=DISABLED)
+                btn_create.config(state=DISABLED)
+                lbl.config(text='Path Of File:')
+                btn_op.config(state=DISABLED)
+                img_lbl = Label(window,image=i,text='No QR \nAvailable',font=('times new roman',17,'bold'),bg='white',fg='red')
+                img_lbl.image=i
+                img_lbl.place(x=795,y=209,width=300,height=300)
+                for j in result:
+                    field.insert(END,str('Details fetched from opened QR Code:')+field.get("1.0", "end-1c")+str(f"\n{j.data.decode('utf-8')}\n"))
+                x=pth.split("/")
+                t = os.path.splitext(x[-1])
+                if name.get() !="":
+                    name.delete(0,END)
+                else:
+                    pass
+                name.insert(0,t[0])
+                name.config(state='disabled')
+        else:
+            flag.set("Select correct format like .png or .jpg")
+    except:
+        pass
+def save_as(d):
+    try:
+        pth = asksaveasfile(mode="w",defaultextension="txt",filetypes=[("Text File","*.txt"),("All Files","*.*")])
+        pth.write(d)
+        global file
+        file =pth.name
+        pth.close()
+    except:
+        pass
+def save_file(event=False):
+    global f
+    if fi.get(1.0,END).strip():
+        data=fi.get(1.0,END)
+    else:
+        d=field.get(1.0,END)
+        data=d.replace("Details fetched from opened QR Code:","")
+    if file=="no file":
+        save_as(data)
+        f=True
+    else:
+        f = open(file,mode="w")
+        f.write(data)
+        f.close()
+        f = True
+def exit(event=False):
+    if not fi.get(1.0,END).strip() and not field.get(1.0,END).strip():
+        window.destroy()
+    elif not fi.get(1.0,END).strip() or not field.get(1.0,END).strip():
+        if not f:
+            x = messagebox.askyesnocancel("Save File","Do you want to save information?")
+            if x == True:
+                try:
+                    save_file()
+                    window.destroy()
+                except Exception as ex:
+                    pass
+            elif x == None:
+                pass
+            else:
+                window.destroy()
+        else:
+            window.destroy()
+def open_file(event=False):
+    global w,file
+    try:
+        if not fi.get(1.0,END).strip():
+            pt = askopenfile(initialdir="/",mode='r',title="Open File",filetypes=[("Text File","*.txt"),("All Files","*.*")])
+            file = pt.name
+            for data in pt:
+                fi.insert(INSERT,data)
+            w=True
+        else:
+            fi.delete(1.0,END)
+            pt = askopenfile(initialdir="/",mode='r',title="Open File",filetypes=[("Text File","*.txt"),("All Files","*.*")])
+            file=pt.name
+            for data in pt:
+                fi.insert(INSERT,data)
+            w=True
+    except:
+        pass
+def search():
+    data=field.get(1.0,END)
+    content=data.split(":")[-1]
+    webbrowser.open_new(content)
+window = Tk()
+window.title('QR Code Generator')
+window.geometry("1100x758+400+20")
+window.configure(bg='skyblue')
+window.resizable(0,0)
+window.bind("<F2>",exit)
+window.bind("<Control-s>",save_file)
+window.bind("<Control-S>",save_file)
+window.protocol("WM_DELETE_WINDOW",exit)
+# window.iconbitmap("qr.ico")
+txt = StringVar()
+t=StringVar()
+flag = StringVar()
+lbl = Label(window,text='Select Path:',font=('times new roman',20,'bold'),bg='skyblue',fg='red')
+lbl.grid(row=0,column=0,padx=25,pady=25)
+lbl_path = Label(window,textvariable=txt,font=('times new roman',20,'bold'),fg='red',width=40).grid(row=0,column=1,padx=25,pady=15)
+btn_pth = Button(window,text='Select Path',command=path_select,font=('times new roman',15,'bold'),bg='skyblue',fg='red',activebackground='red',activeforeground='skyblue',bd=5,relief=GROOVE)
+btn_pth.grid(row=0,column=2,padx=25,pady=25)
+#TOP entry box.
+fi = Text(window,fg="blue",padx=10,pady=10,wrap=WORD,font=("Arial",20,"bold"))
+fi.place(x=5,y=70,width=760,height=440)
+sc = Scrollbar(window)
+sc.place(x=768,y=70,height=440)
+fi.config(yscrollcommand=sc.set)
+sc.config(command=fi.yview)
+name = Entry(window,textvariable=t,width=25,bg='white',fg='black',font=("Arial",15,"bold"))
+name.place(x=805,y=170)
+name_lbl=Label(window,text='Enter Name Of QR Image:',fg='red',bg='skyblue',font=("Arial",15,"bold"),width=25)
+name_lbl.place(x=790,y=130)
+btn_op = Button(window,text='Open File',command=open_file,font=('times new roman',13,'bold'),bg='skyblue',fg='red',activebackground='red',activeforeground='skyblue',bd=5,relief=GROOVE)
+btn_op.place(x=810,y=85)
+btn_s = Button(window,text='Save',command=save_file,font=('times new roman',13,'bold'),bg='skyblue',fg='red',activebackground='red',activeforeground='skyblue',bd=5,relief=GROOVE)
+btn_s.place(x=950,y=85,width=100)
+btn_create = Button(window,text='Generate QR Code',command=generate,font=('times new roman',15,'bold'),bg='skyblue',fg='red',activebackground='red',activeforeground='skyblue',bd=5,relief=GROOVE)
+btn_create.place(x=390,y=515,width=200,height=40)
+btn_open = Button(window,text='Open QR Code',command=open_qr,font=('times new roman',15,'bold'),bg='skyblue',fg='red',activebackground='red',activeforeground='skyblue',bd=5,relief=GROOVE)
+btn_open.place(x=880,y=515,width=150,height=40)
+fl_lbl = Label(window,width=13,textvariable=flag,font=('times new roman',15,'bold'),bg='white',fg='red')
+fl_lbl.place(x=5,y=515,width=370,height=40)
+flag.set('Path Is Empty!')
+img_lbl = Label(window,text='No QR \nAvailable',font=('times new roman',17,'bold'),bg='white',fg='red')
+img_lbl.place(x=795,y=209,width=300,height=300)
+btn_clear = Button(window,text='Clear',command=clear,font=('times new roman',15,'bold'),bg='skyblue',fg='red',activebackground='red',activeforeground='skyblue',bd=5,relief=GROOVE)
+btn_clear.place(x=620,y=515,width=100,height=40)
+btn_search = Button(window,text='Search',command=search,font=('times new roman',15,'bold'),bg='skyblue',fg='red',activebackground='red',activeforeground='skyblue',bd=5,relief=GROOVE)
+btn_search.place(x=750,y=515,width=100,height=40)
+#BOTTOM ENTRY BOX.
+field = Text(window,padx=10,pady=10,font=('times new roman',15,'bold'),bg='white',fg='black',bd=5)
+z=Scrollbar(window)
+z.place(x=1078,y=560,height=195)
+field.place(x=3,y=560,width=1070,height=195)
+field.config(yscrollcommand=z.set)
+z.config(command=field.yview)
+window.mainloop()
