@@ -1,4 +1,4 @@
-import random as rd #importing random module.
+import random as rd
 def init_board():#initialize board value with blank space.
   values = [0,1,2,3,4,5,6,7,8,9]
   for r in range(1,10):
@@ -31,6 +31,109 @@ def check():#changing the player turn.
         turn='O'
     else:
         turn='X'
+def AI_moves():
+    if flag==0 and not turn=='O':
+        if values[1]=='O' and values[2]=='O' and values[3]==" ":
+            return 3
+        elif values[1]=='O' and values[2]==" " and values[3]=='O':
+            return 2             
+        elif values[1]==" " and values[2]=='O' and values[3]=='O':
+            return 1
+        elif values[4]=='O' and values[5]=='O' and values[6]==" ":
+            return 6
+        elif values[4]=='O' and values[5]==" " and values[6]=='O':
+            return 5             
+        elif values[4]==" " and values[5]=='O' and values[6]=='O':
+            return 4
+        elif values[7]=='O' and values[8]=='O' and values[9]==" ":
+            return 9
+        elif values[7]=='O' and values[8]==" " and values[9]=='O':
+            return 8             
+        elif values[7]==" " and values[8]=='O' and values[9]=='O':
+            return 7
+        elif values[1]=='O' and values[4]=='O' and values[7]==" ":
+            return 7
+        elif values[1]=='O' and values[4]==" " and values[7]=='O':
+            return 4             
+        elif values[1]==" " and values[4]=='O' and values[7]=='O':
+            return 1
+        elif values[2]=='O' and values[5]=='O' and values[8]==" ":
+            return 8
+        elif values[2]=='O' and values[5]==" " and values[8]=='O':
+            return 5             
+        elif values[2]==" " and values[5]=='O' and values[8]=='O':
+            return 2
+        elif values[3]=='O' and values[6]=='O' and values[9]==" ":
+            return 9
+        elif values[3]=='O' and values[6]==" " and values[9]=='O':
+            return 6             
+        elif values[3]==" " and values[6]=='O' and values[9]=='O':
+            return 3
+        elif values[1]=='O' and values[5]=='O' and values[9]==" ":
+            return 9
+        elif values[1]=='O' and values[5]==" " and values[9]=='O':
+            return 5             
+        elif values[1]==" " and values[5]=='O' and values[9]=='O':
+            return 1
+        elif values[3]=='O' and values[5]=='O' and values[7]==" ":
+            return 7
+        elif values[3]=='O' and values[5]==" " and values[7]=='O':
+            return 5             
+        elif values[3]==" " and values[5]=='O' and values[7]=='O':
+            return 3
+        else:
+            return rd.randint(1,9)
+    elif flag==1 and not turn=='X':
+        if values[1]=='X' and values[2]=='X' and values[3]==" ":
+            return 3
+        elif values[1]=='X' and values[2]==" " and values[3]=='X':
+            return 2             
+        elif values[1]==" " and values[2]=='X' and values[3]=='X':
+            return 1
+        elif values[4]=='X' and values[5]=='X' and values[6]==" ":
+            return 6
+        elif values[4]=='X' and values[5]==" " and values[6]=='X':
+            return 5             
+        elif values[4]==" " and values[5]=='X' and values[6]=='X':
+            return 4
+        elif values[7]=='X' and values[8]=='X' and values[9]==" ":
+            return 9
+        elif values[7]=='X' and values[8]==" " and values[9]=='X':
+            return 8             
+        elif values[7]==" " and values[8]=='X' and values[9]=='X':
+            return 7
+        elif values[1]=='X' and values[4]=='X' and values[7]==" ":
+            return 7
+        elif values[1]=='X' and values[4]==" " and values[7]=='X':
+            return 4             
+        elif values[1]==" " and values[4]=='X' and values[7]=='X':
+            return 1
+        elif values[2]=='X' and values[5]=='X' and values[8]==" ":
+            return 8
+        elif values[2]=='X' and values[5]==" " and values[8]=='X':
+            return 5             
+        elif values[2]==" " and values[5]=='X' and values[8]=='X':
+            return 2
+        elif values[3]=='X' and values[6]=='X' and values[9]==" ":
+            return 9
+        elif values[3]=='X' and values[6]==" " and values[9]=='X':
+            return 6             
+        elif values[3]==" " and values[6]=='X' and values[9]=='X':
+            return 3
+        elif values[1]=='X' and values[5]=='X' and values[9]==" ":
+            return 9
+        elif values[1]=='X' and values[5]==" " and values[9]=='X':
+            return 5             
+        elif values[1]==" " and values[5]=='X' and values[9]=='X':
+            return 1
+        elif values[3]=='X' and values[5]=='X' and values[7]==" ":
+            return 7
+        elif values[3]=='X' and values[5]==" " and values[7]=='X':
+            return 5             
+        elif values[3]==" " and values[5]=='X' and values[7]=='X':
+            return 3
+        else:
+            return rd.randint(1,9)
 if __name__=="__main__":#main program start from here.
     while not game_over:
         if flag == 0:
@@ -40,7 +143,7 @@ if __name__=="__main__":#main program start from here.
                 pos=int(input("Enter your position:"))
             else:
                 print("Computer turn")
-                pos=rd.randint(1,9)
+                pos=AI_moves()
         elif flag == 1:
             if turn == 'X':
                 print(f"{name} turn")
@@ -48,7 +151,7 @@ if __name__=="__main__":#main program start from here.
                 pos=int(input("Enter your position:"))
             else:
                 print("Computer turn")
-                pos=rd.randint(1,9)
+                pos=AI_moves()
         if is_empty(pos):
             update(pos,turn)
             draw_board()
@@ -57,7 +160,10 @@ if __name__=="__main__":#main program start from here.
             print("Invalid move")
         result=winner()
         if result == True:
-            print(turn+"-wins!")
+            if (flag==0 and turn=='O') or(flag==1 and turn=='X'):
+                print(f"{name} -wins!")
+            else:
+                print("Computer -wins!")
             game_over=True
         elif result == "Tie":
             print("It's Tie")
