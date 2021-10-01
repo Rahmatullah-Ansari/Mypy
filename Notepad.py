@@ -226,8 +226,10 @@ def td(event=False):
     d=x.day
     if h < 12:
         txtarea.insert(INSERT,f"{h}:{m} AM {d}-{mn}-{y}")
-    else:
+    elif h == 12:
         txtarea.insert(INSERT,f"{h}:{m} PM {d}-{mn}-{y}")
+    elif h > 12:
+        txtarea.insert(INSERT,f"{h-12}:{m} PM {d}-{mn}-{y}")
 flag = True
 def st():
     global flag
@@ -349,6 +351,7 @@ window.bind("<Control-S>",save_file)
 window.bind("<Control-n>",new_file)
 window.bind("<Control-N>",new_file)
 window.bind("<Control-Shift-N>",new_window)
+window.bind("<Control-Shift-n>",new_window)
 window.bind("<Control-c>",copy)
 window.bind("<Control-C>",copy)
 window.bind("<Control-V>",paste)
