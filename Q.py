@@ -191,6 +191,8 @@ def open_file(event=False):
 def search():
     data=field.get(1.0,END)
     content=data.split(":")[-1]
+    if len(content) == 1:
+        content=fi.selection_get()
     webbrowser.open_new("https://www.google.com/search?q="+content)
 window = Tk()
 window.title('QR Code Generator')
