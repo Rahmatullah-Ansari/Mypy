@@ -201,6 +201,7 @@ def rd(event=False):
         pass
 def bgcolor():
     c = colorchooser.askcolor()
+    print(c)
     txtarea.config(bg=c[1])
 def fgcolor():
     c = colorchooser.askcolor()
@@ -231,7 +232,7 @@ def td(event=False):
     elif h > 12:
         txtarea.insert(INSERT,f"{h-12}:{m} PM {d}-{mn}-{y}")
 flag = True
-def st():
+def st(event=False):
     global flag
     flag = True
 def fnt():
@@ -271,6 +272,7 @@ def fnt():
         f.geometry("610x500+250+170")
         f.iconbitmap("note.ico")
         f.config(background="skyblue")
+        f.protocol("WM_DELETE_WINDOW",cancel)
         a =Label(f,text="Font",font=("Arial",15,"bold"),foreground="red",background="skyblue")
         a.place(x=50,y=30)
         lst2=[]
@@ -315,7 +317,7 @@ def fnt():
         e.place(x=300,y=310,width=230,height=100)
         btn1 = Button(f,text="Cancel",command=cancel)
         btn1.place(x=430,y=450)
-        btn2 = Button(f,text="Ok",command=ok)
+        btn2 = Button(f,text="Save",command=ok)
         btn2.place(x=300,y=450)
         f.resizable(0,0)
         flag=False

@@ -1,4 +1,4 @@
-import pyqrcode 
+import pyqrcode
 import webbrowser
 from tkinter import *
 from tkinter.filedialog import askdirectory,askopenfile,askopenfilename,asksaveasfile
