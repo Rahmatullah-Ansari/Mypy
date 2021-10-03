@@ -168,6 +168,8 @@ def exit(event=False):
                 window.destroy()
         else:
             window.destroy()
+    else:
+        window.destroy()
 def open_file(event=False):
     global w,file
     try:
@@ -189,7 +191,7 @@ def open_file(event=False):
 def search():
     data=field.get(1.0,END)
     content=data.split(":")[-1]
-    webbrowser.open_new(content)
+    webbrowser.open_new("https://www.google.com/search?q="+content)
 window = Tk()
 window.title('QR Code Generator')
 window.geometry("1100x758+400+20")
