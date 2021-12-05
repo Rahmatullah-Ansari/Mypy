@@ -49,7 +49,7 @@ def take_command():
         with sr.Microphone() as source:
             print('Listening to you...')
             listener.pause_threshold=5
-            audio = listener.listen(source,phrase_time_limit=3,timeout=15)
+            audio = listener.listen(source,phrase_time_limit=3,timeout=8)
             try:
                 print('Recognizing...')
                 query = listener.recognize_google(audio,language='en-in')
@@ -201,7 +201,7 @@ if __name__ == "__main__":
             elif "close idea" in query or "close IntelliJ idea" in query:
                 os.system("taskkill /f /im idea64.exe")
             elif "studio" in query or "open studio" in query or "open android studio" in query:
-                os.startfile("C:\Program Files\Android\Android Studio\bin\\studio64.exe")
+                os.startfile("C:\\Program Files\\Android\\Android Studio\\bin\\studio64.exe")
                 std = True
             elif "close studio" in query or "close android studio" in query:
                 os.system("taskkill /f /im studio64.exe")
